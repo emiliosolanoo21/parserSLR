@@ -1,0 +1,7 @@
+// AFN
+digraph {
+	rankdir=LR
+	label="Minimized FDA"
+	2417075464752 [label=Q0 shape=doublecircle]
+	2417075464752 -> 2417075464752 [label=a]
+}

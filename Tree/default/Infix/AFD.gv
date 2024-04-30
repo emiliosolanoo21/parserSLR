@@ -1,0 +1,11 @@
+// AFN
+digraph {
+	rankdir=LR
+	label=FDA
+	2417075465376 [label=q0 shape=doublecircle]
+	2417075464992 [label=q1 shape=doublecircle]
+	2417075464896 [label=q2 shape=doublecircle]
+	2417075464896 -> 2417075464896 [label=a]
+	2417075464992 -> 2417075464896 [label=a]
+	2417075465376 -> 2417075464992 [label=a]
+}

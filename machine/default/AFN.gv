@@ -1,0 +1,10 @@
+// AFN
+digraph {
+	rankdir=LR
+	label=AF
+	37905416 [label=a0 shape=circle]
+	37905368 [label=a1 shape=doublecircle]
+	37905416 -> 37905368 [label=i]
+	37905560 [label=b1 shape=doublecircle]
+	37905416 -> 37905560 [label=d]
+}
