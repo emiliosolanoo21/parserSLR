@@ -140,3 +140,109 @@ class State:
 
     def numberTransitions(self) -> int:
         return self.numTrans
+    
+    
+class GrammarElement:
+    def __init__(self, value, terminal=True) -> None:
+        self.value = value
+        self.terminal = terminal
+        self.first = set()
+        self.follow = set()
+        if terminal:
+            self.first.add(self)
+            
+        self.production:Set[Production] = set()
+    
+    def addProd(self, pr:'Production'):
+        self.production.add(pr)
+                    
+    def __eq__(self, other):
+        """Define la igualdad entre dos instancias de la clase."""
+        if isinstance(other, GrammarElement):
+            return self.value == other.value
+        return False
+
+    def __hash__(self):
+        """Define el valor de hash de la instancia."""
+        return hash((self.value,))
+    
+    
+class Production:
+    def __init__(self,origin:'GrammarElement', direction: List['GrammarElement'],number:int, point:int = 0) -> None:
+        self.origin = origin
+        self.direction = tuple(direction)
+        self.number:int = number
+        self.point = point
+        
+    def passPoint(self, symbol:'GrammarElement'):
+        if self.point < len(self.direction):
+            if symbol == self.direction[self.point]:
+                newProd:'Production' = Production(self.origin, self.direction, self.number, self.point+1)
+                return newProd
+        return None
+    
+    def __lt__(self,other):
+        if self.origin.value == other.origin.value:
+            return len(self.direction) < len(other.direction)
+        return self.origin.value < other.origin.value
+    
+    def clouser(self):
+        clouserResult = {self}
+        if self.point < len(self.direction):
+            while True:
+                tempCR = set()
+                for pr in clouserResult:
+                    symbol = pr.obtainPoint()
+                    if symbol is not None and not symbol.terminal:
+                        for pr2 in symbol.production:
+                            if pr2 not in clouserResult:
+                                tempCR.add(pr2)
+                if len(tempCR) == 0:
+                    break
+                clouserResult = clouserResult.union(tempCR)
+        return clouserResult
+    
+    def obtainPoint(self):
+        if self.point < len(self.direction):
+            return self.direction[self.point]
+        else:
+            return None
+    
+    def __str__(self) -> str:
+        toPrint = [x.value for x in self.direction]
+        toPrint.insert(self.point, '.')
+        return f"{self.origin.value} -> {' '.join(toPrint)}"
+        
+        
+    def __eq__(self, other):
+        """Define la igualdad entre dos instancias de la clase."""
+        if isinstance(other, Production):
+            return self.origin == other.origin and self.direction == other.direction and self.point == other.point
+        return False
+
+    def __hash__(self):
+        """Define el valor de hash de la instancia."""
+        return hash((self.origin, self.direction, self.point))
+
+class LR0_state:
+    def __init__(self, items:List['Production'], number:int) -> None:
+        self.items = tuple(sorted(items))
+        self.number = number
+        self.transitionsDict: Dict[GrammarElement,'LR0_state']= {}
+        self.finalState = False
+        
+    def __str__(self) -> str:
+        return str(self.number)+'\n'+'\n'.join([str(x) for x in self.items])
+        
+    def addTransition(self,symbol:'GrammarElement', state:'LR0_state'):
+        self.transitionsDict[symbol] = state
+    
+    def __eq__(self, other):
+        """Define la igualdad entre dos instancias de la clase."""
+        if isinstance(other, LR0_state):
+            return self.items == other.items
+        return False
+
+    def __hash__(self):
+        """Define el valor de hash de la instancia."""
+        return hash(self.items)

@@ -1,0 +1,72 @@
+// LR0
+digraph {
+	rankdir=LR
+	0 [label="0
+expression -> . term
+expression -> . expression PLUS term
+expression' -> . expression $
+factor -> . ID
+factor -> . LPAREN expression RPAREN
+term -> . factor
+term -> . term TIMES factor" shape=circle]
+	1 [label="1
+factor -> ID ." shape=circle]
+	0 -> 1 [label=ID]
+	2 [label="2
+expression -> . term
+expression -> . expression PLUS term
+factor -> . ID
+factor -> . LPAREN expression RPAREN
+factor -> LPAREN . expression RPAREN
+term -> . factor
+term -> . term TIMES factor" shape=circle]
+	2 -> 1 [label=ID]
+	2 -> 2 [label=LPAREN]
+	6 [label="6
+expression -> expression . PLUS term
+factor -> LPAREN expression . RPAREN" shape=circle]
+	7 [label="7
+expression -> expression PLUS . term
+factor -> . ID
+factor -> . LPAREN expression RPAREN
+term -> . factor
+term -> . term TIMES factor" shape=circle]
+	7 -> 1 [label=ID]
+	7 -> 2 [label=LPAREN]
+	10 [label="10
+expression -> expression PLUS term .
+term -> term . TIMES factor" shape=circle]
+	8 [label="8
+factor -> . ID
+factor -> . LPAREN expression RPAREN
+term -> term TIMES . factor" shape=circle]
+	8 -> 1 [label=ID]
+	8 -> 2 [label=LPAREN]
+	11 [label="11
+term -> term TIMES factor ." shape=circle]
+	8 -> 11 [label=factor]
+	10 -> 8 [label=TIMES]
+	7 -> 10 [label=term]
+	5 [label="5
+term -> factor ." shape=circle]
+	7 -> 5 [label=factor]
+	6 -> 7 [label=PLUS]
+	9 [label="9
+factor -> LPAREN expression RPAREN ." shape=circle]
+	6 -> 9 [label=RPAREN]
+	2 -> 6 [label=expression]
+	4 [label="4
+expression -> term .
+term -> term . TIMES factor" shape=circle]
+	4 -> 8 [label=TIMES]
+	2 -> 4 [label=term]
+	2 -> 5 [label=factor]
+	0 -> 2 [label=LPAREN]
+	3 [label="3
+expression -> expression . PLUS term
+expression' -> expression . $" shape=doublecircle]
+	3 -> 7 [label=PLUS]
+	0 -> 3 [label=expression]
+	0 -> 4 [label=term]
+	0 -> 5 [label=factor]
+}
