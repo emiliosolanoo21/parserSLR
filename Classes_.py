@@ -1,4 +1,6 @@
 from typing import *
+import pandas as pd
+import tabulate as tb
 
 
 class Node:
@@ -148,6 +150,7 @@ class GrammarElement:
         self.terminal = terminal
         self.first = set()
         self.follow = set()
+        self.ignored = False
         if terminal:
             self.first.add(self)
             
@@ -155,6 +158,23 @@ class GrammarElement:
     
     def addProd(self, pr:'Production'):
         self.production.add(pr)
+        
+    def calcFirst(self):
+        seen = set()
+        evaluating = list(self.production)
+        while len(evaluating) > 0:
+            pr = evaluating.pop(0)
+            point = pr.obtainPoint()
+            if point:
+                if point == self:
+                    continue
+                if point.terminal:
+                    self.first.add(point)
+                    continue
+                if point in seen:
+                    continue
+                seen.add(point)
+                evaluating+=list(point.production)
                     
     def __eq__(self, other):
         """Define la igualdad entre dos instancias de la clase."""
@@ -181,6 +201,27 @@ class Production:
                 return newProd
         return None
     
+    def calcFollow(self):
+        actual = 0
+        while actual < len(self.direction):
+            pointingPos = self.direction[actual]
+            pointingNext = None
+            
+            if actual+1 < len(self.direction):
+                pointingNext = self.direction[actual+1]
+            
+            if not pointingPos.terminal:
+                if pointingNext:
+                    if pointingNext.terminal:
+                        pointingPos.follow.add(pointingNext)
+                    else:
+                        for elem in pointingNext.first:
+                            pointingPos.follow.add(elem)
+                else:
+                    for next in self.origin.follow:
+                        pointingPos.follow.add(next)
+            actual+=1
+
     def __lt__(self,other):
         if self.origin.value == other.origin.value:
             return len(self.direction) < len(other.direction)
@@ -230,6 +271,17 @@ class LR0_state:
         self.number = number
         self.transitionsDict: Dict[GrammarElement,'LR0_state']= {}
         self.finalState = False
+        self.nonTerminals:List[Production] = []
+        self.terminals:List[Production] = []
+        self.elses:List[Production] = []
+        
+        for item in self.items:
+            if not item.obtainPoint():
+                self.elses.append(item)
+            elif item.obtainPoint().terminal:
+                self.terminals.append(item)
+            else:
+               self.nonTerminals.append(item)
         
     def __str__(self) -> str:
         return str(self.number)+'\n'+'\n'.join([str(x) for x in self.items])
@@ -246,3 +298,77 @@ class LR0_state:
     def __hash__(self):
         """Define el valor de hash de la instancia."""
         return hash(self.items)
+    
+class SLRTable:
+    def __init__(self, df:pd.DataFrame, tokens:Set, ignoredTokens:Set) -> None:
+        self.df = df
+        self.tokens = tokens
+        self.ignoredTokens = ignoredTokens
+        
+    def obtainAction(self, state, symbol):
+        return self.df.at[state, str(symbol)]
+    
+    def obtainGE(self, value):
+        if value in self.tokens:
+            if value in self.ignoredTokens:
+                return 2
+            return 0
+        return 1
+    
+    def simulation(self, text:str):
+        tokensContained = []
+        for eachToken in text.split(' '):
+            eachToken = eachToken.strip()
+            if eachToken == '':
+                continue
+            GEs = self.obtainGE(eachToken)
+            if GEs == 2:
+                continue
+            elif GEs == 0:
+                tokensContained.append(eachToken)
+            else:
+                print(eachToken)
+                raise Exception('Token not allowed.')
+        
+        tokensContained.append('$')
+        stateStack = [0]
+        
+        while True:
+            actualState = stateStack[-1]
+            actualToken = tokensContained[0]
+            
+            action = self.obtainAction(actualState, actualToken)
+            
+            stackCopy = stateStack.copy()
+            
+            stackCopy.reverse()
+            
+            print(tb.tabulate({
+                'stateStack': stackCopy,
+                'input': tokensContained.copy(),
+                'action': action
+                }, headers='keys', tablefmt='psql'))
+            
+            if pd.isna(action):
+                expected = self.df.columns[self.df.loc[actualState].notna()].tolist()
+                
+                print('Expected:\n')
+                for eachElem in expected:
+                    print(eachElem)
+                raise Exception('Not accepted.')
+            elif action[0] == 's':
+                stateStack.append(action[1])
+                tokensContained.pop(0)
+            elif action[0] == 'r':
+                for _ in range(action[1][1]):
+                    stateStack.pop()
+                actualState = stateStack[-1]
+                A = action[1][0]
+                newAction = self.obtainAction(actualState, A)
+                if pd.isna(newAction):
+                    raise Exception('Not existing transition between State and Symbol.')
+                stateStack.append(newAction[1])
+            elif action[0] == 'a':
+                print('\033[92m', 'Accepted!', '\033[0m')
+                break
+                

@@ -4,7 +4,10 @@ from preAFD import import_module
 from typing import *
 import graphviz
 from Draw_diagrams import draw_AF
-from Classes_ import GrammarElement, Production, LR0_state
+from Classes_ import GrammarElement, Production, LR0_state, SLRTable
+import pickle
+import pandas as pd
+import tabulate as tb
 
 
 class YaparReader:
@@ -19,11 +22,14 @@ class YaparReader:
         self.productions: Dict[int, Production] = {}
         self.initialProduction: Production = None
         self.initState = None
+        self.SLR = None
+        self.LR0: Dict[LR0_state, LR0_state] = {}
 
     def analizeFile(self):
         yapar = import_module('yapar.py', {
             'comments': ['\/\*[^/]+\*\/'],
             'tokens': ['%token ([A-Z]+( [A-Z]+)*)'],
+            'ignore': ['IGNORE ([A-Z]+( [A-Z]+)*)'],
             'productions': ['[a-z]+\:(((\n|\t| )*([a-z]+|[A-Z]+| )*)((\n|\t| )*\| *((\n|\t| )*([a-z]+|[A-Z]+| )*))*)((\n|\t| )*\;)']
         })
 
@@ -39,6 +45,13 @@ class YaparReader:
                 for upperWord in message:
                     elem = GrammarElement(upperWord.strip())
                     self.tokens[elem] = elem
+            elif token == 'ignore':
+                message = message.replace('IGNORE', '').split()
+                for upperWord in message:
+                    elem = GrammarElement(upperWord.strip())
+                    if elem not in self.tokens:
+                        raise Exception('Ignored, but not declared before.')
+                    self.tokens[elem].ignored = True
             elif token == 'productions':
                 message = message.split(':')
                 key = GrammarElement(message[0], False)
@@ -58,7 +71,7 @@ class YaparReader:
         self.productions[1] = self.initialProduction
         newInit.addProd(self.initialProduction)
         
-        count= 2
+        count = 2
         for key in productions:
             prs = productions[key]
             for pr in prs:
@@ -115,6 +128,45 @@ class YaparReader:
                         counter+=1
                     state.addTransition(GE, newLR0)
         
+        self.LR0 = LR0States
+        
+        for eachToken in self.tokens:
+            eachToken.calcFirst()
+        for eachPr in self.productions.values():
+            eachPr.calcFollow()
+        for eachPr in self.productions.values():
+            eachPr.calcFollow()
+        for eachToken in self.tokens:
+            print('--------------')
+            print(eachToken.value)
+            for f in eachToken.follow:
+                print(f.value)
+    
+    def constructSLR(self):
+        slr = pd.DataFrame(columns=[x.value for x in self.tokens.values()], index=[x.number for x in self.LR0.values()])
+        
+        for eachState in self.LR0:
+            for symbol, nextState in eachState.transitionsDict.items():
+                if symbol.terminal:
+                    slr.loc[eachState.number, symbol.value] = ('s', nextState.number)
+                else:
+                    slr.loc[eachState.number, symbol.value] = ('g', nextState.number)
+            for pr in eachState.terminals:
+                if pr.obtainPoint().value == '$':
+                    slr.loc[eachState.number, '$'] = ('a', 0)
+            for pr in eachState.elses:
+                for symbol in pr.origin.follow:
+                    slr.loc[eachState.number, symbol.value] = ('r', (pr.origin.value, len(pr.direction)))
+        
+        print(tb.tabulate(slr, headers='keys', tablefmt='psql'))
+        
+        table = SLRTable(slr,set([x.value for x in self.tokens]), set([x.value for x in self.tokens if x.ignored]))
+        
+        self.SLR = table
+        
+        with open('table.pkl', 'wb') as file:
+            pickle.dump(table, file)
+
     def drawLR0(self, explicit=False):
         dot = graphviz.Digraph(comment='LR0')
         dot.attr(rankdir='LR')
@@ -135,7 +187,10 @@ class YaparReader:
         dot.render('LR0_'+name+'.gv', view = True, directory = './')
         
 if __name__ == "__main__":
+    #attempt = 'LPAREN ID PLUS ID RPAREN TIMES ID TIMES LPAREN ID PLUS ID RPAREN'
     readerYapar = YaparReader("./slr-1.yalp")
     readerYapar.analizeFile()
     readerYapar.drawLR0()
     readerYapar.drawLR0(True)
+    readerYapar.constructSLR()
+    #readerYapar.SLR.simulation(attempt)
