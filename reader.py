@@ -133,8 +133,12 @@ def transformsChar(contents: List[str]) -> List[List[str or int]]:
 
             if line[charIndex] in '_' and not escaped:
                 transformed[-1].append('(')
-                for chrI in globalChars():
-                    transformed[-1].append(ord(chrI))
+                r1 = list(range(48,58))
+                r2 = list(range(65,91))
+                r3 = list(range(97,123))
+                total = r1+r2+r3+[95]
+                for chrI in total:
+                    transformed[-1].append(chrI)
                     transformed[-1].append('|')
                 transformed[-1].pop()
                 transformed[-1].append(')')

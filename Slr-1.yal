@@ -1,0 +1,54 @@
+(* Lexer para Gramática No. 1 - Expresiones aritméticas simples para variables *)
+
+(* Introducir cualquier header aqui *)
+{
+
+parser.add_argument('-o', help='Output file', default='a.out')
+fileOut = parser.parse_args().o
+with open(fileOut, 'w') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("")
+}
+
+
+let delim = [' ''\t''\n']
+let ws = delim+
+let letter = ['A'-'Z''a'-'z']
+let digit = ['0'-'9']
+let id = letter(letter|digit)*
+
+rule tokens =
+    ws   {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("WHITESPACE ")
+ }
+  | id        {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("ID ")
+ }               (* Cambie por una acción válida, que devuelva el token *)
+  | '+'       {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("PLUS ")
+}
+  | '*'       {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("TIMES ")
+}
+  | '('       {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("LPAREN ")
+  }
+  | ')'       {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("RPAREN ")
+}
+
+(* Introducir cualquier trailer aqui *)
+
+

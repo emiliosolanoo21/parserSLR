@@ -1,0 +1,54 @@
+(* Lexer para Gramatica No. 3 - Variacion expresiones aritmeticas simples *)
+
+(* Introducir cualquier header aqui *)
+
+
+{
+
+parser.add_argument('-o', help='Output file', default='a.out')
+fileOut = parser.parse_args().o
+with open(fileOut, 'w') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("")
+}
+
+
+let delim = [' ''\t''\n']
+let ws = delim+
+let digit = ["0123456789"]
+let digits = digit+
+let number = digits('.'digits)?('E'['+''-']?digits)?
+
+rule tokens =
+    ws        {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("WHITESPACE ")
+}               (* Cambie por una accion valida, que devuelva el token *)
+  | number    {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("NUMBER ")
+}
+  | '+'       {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("PLUS ")
+}
+  | '*'       {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("TIMES ")
+}
+  | '('       {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("LPAREN ")
+}
+  | ')'       {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("RPAREN ")
+}
+
+(* Introducir cualquier trailer aqui *)

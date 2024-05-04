@@ -346,7 +346,7 @@ class SLRTable:
             print(tb.tabulate({
                 'stateStack': stackCopy,
                 'input': tokensContained.copy(),
-                'action': action
+                'action': action if not pd.isna(action) else ['error']
                 }, headers='keys', tablefmt='psql'))
             
             if pd.isna(action):

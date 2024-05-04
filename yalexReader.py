@@ -17,7 +17,7 @@ class YalexReader:
         expMachine = import_module('expression.py', {
                 'symbol': ["'[^']'|'[\n \t]'"],
                 'string': ['"([^"]| )+"'],
-                'operators': ['\|', '\?', '\*', '\+', '\#', '\(', '\)', '\^', '-'],
+                'operators': ['\|', '\?', '\*', '\+', '\#', '\(', '\)', '\^', '-','\_'],
                 'set': ["\[([^[]])+\]"],
             })
 
@@ -101,14 +101,15 @@ class YalexReader:
             expression:str = dec[1].strip()
             
             expression = expAnalyzer(expression)
+            print(name, expression)
             variableMachine = prepareAFN({name:[name]})
             expMachine.combine_States(variableMachine)
             self.variables[name] = expression
         
         def tokAnalyzer(message:str):
             tokenMachine = import_module('tokens.py', {
-               'definition': ['([^ \n\t]|\'[^\']\'|"[^"]+")+'],
-               'token': ['\{([^{}]|\\\\\{|\\\\\})+\}']
+                'token': ['\{([^{}]|\\\\\{|\\\\\})+\}'],
+               'definition': ['([^ \n{\t]+|\'[^\']\'|"[^"]+")']
             })
             
             message = message[1:] if message[0]=='|' else message
@@ -138,13 +139,15 @@ class YalexReader:
         
         machine = import_module('machine.py', {
             'comments': ['\(\*[^()]+\*\)'],
-            'declarations': ['let +[a-z]+ *= *\n*([^ \n\t]|\'[^\']\'|"[^"]+")+'],
+            'declarations': ['let +[a-z]+ *= *([^\n\t])+'],
             'tokens': ['(\| +)?([^ \n\t]|\'[^\']\'|"[^"]+")+( +\{([^{}]|\\\\\{|\\\\\})+\})?'],
             'RL': ['rule +[a-z]+ *='],
             'header':["\{([^{}]|\\\\\{|\\\\\})+\}"]
             })
         
         analysis = exclusiveSim(machine, self.content)
+        
+        print(analysis)
         
         inRules = True
         

@@ -122,7 +122,7 @@ def exclusiveSim(initState: State, string: str):
         for path in newPaths:
             if path[-1].isFinalState:
                 newLastPathAccepted.append(
-                    (chIndex, path, sum([path[i].numberTransitions() for i in range(len(path))])))
+                    (chIndex, path, path[-1]))
 
         if len(newLastPathAccepted) > 0:
             lastPathAccepted = sorted(newLastPathAccepted, key=lambda x: x[2])

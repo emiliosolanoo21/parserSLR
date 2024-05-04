@@ -8,6 +8,6 @@ from preAFD import *
 import yalexReader
 from Colors import BOLD, REVERSE, GREEN, YELLOW, RESET
 
-yr = yalexReader.YalexReader('lexer1.yal')
+yr = yalexReader.YalexReader('Slr-4.yal')
 yr.analizeFile()
 yr.createScanners()

@@ -82,6 +82,7 @@ class YaparReader:
                     if element in self.tokens:
                         real_direction.append(self.tokens[element])
                     else:
+                        print(element.value)
                         raise Exception(element.value + ' not declared')
                 
                 
@@ -185,12 +186,4 @@ class YaparReader:
         drawState(self.initState)
         name = 'explicit' if explicit else ''
         dot.render('LR0_'+name+'.gv', view = True, directory = './')
-        
-if __name__ == "__main__":
-    #attempt = 'LPAREN ID PLUS ID RPAREN TIMES ID TIMES LPAREN ID PLUS ID RPAREN'
-    readerYapar = YaparReader("./slr-1.yalp")
-    readerYapar.analizeFile()
-    readerYapar.drawLR0()
-    readerYapar.drawLR0(True)
-    readerYapar.constructSLR()
-    #readerYapar.SLR.simulation(attempt)
+    

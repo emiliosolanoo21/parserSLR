@@ -11,6 +11,9 @@
 %token DIV
 %token NUMBER
 %token LPAREN RPAREN
+%token WHITESPACE
+
+IGNORE WHITESPACE
 
 expression:
     expression PLUS term
