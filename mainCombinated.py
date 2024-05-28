@@ -10,19 +10,19 @@ from yaparReader import YaparReader
 from Colors import BOLD, REVERSE, GREEN, YELLOW, RESET
 
 if __name__ == "__main__":
-    yr = yalexReader.YalexReader('Slr-4.yal')
+    yr = yalexReader.YalexReader('YAL4Yapar.yal')
     yr.analizeFile()
     yr.createScanners()
 
     scannerPath = './scanner/out_tokens.py'
     tokensPath = './scanner/Salida.txt'
     
-    readTokens = ['python', scannerPath, './scanner/asd4.txt', '-o', tokensPath]
+    readTokens = ['python', scannerPath, './scanner/asdYapar.txt', '-o', tokensPath]
     subprocess.run(readTokens) 
     
     with open(tokensPath, 'r') as file:
         content = file.read()
-    readerYapar = YaparReader("./slr-4.yalp")
+    readerYapar = YaparReader("./YAPAR4Yapar.yalp")
     readerYapar.analizeFile()
     readerYapar.drawLR0()
     readerYapar.drawLR0(True)

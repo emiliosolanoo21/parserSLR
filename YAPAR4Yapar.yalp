@@ -1,0 +1,95 @@
+/* Yapar for reading yapars */
+
+%token COMMENT LOWERCASE UPPERCASE TOKEN IGNOREFLAG TWODOTS SEMICOLON OR SPLITTER SPACE NEWLINE
+IGNORE SPACE
+IGNORE COMMENT
+
+%%
+
+file:
+    filedeclarations SPLITTER newlines filerules
+;
+
+filedeclarations:
+  declarations
+  | newlines declarations
+;
+
+filerules:
+  rules
+  | rules newlines
+;
+
+/* Declarations section */
+declarations:
+    declaration
+  | declarations declaration
+;
+
+declaration:
+    tokendeclaration
+  | ignoredeclaration
+;
+
+tokendeclaration:
+    TOKEN newlines
+;
+
+ignoredeclaration:
+    IGNOREFLAG newlines
+;
+
+idlist:
+    UPPERCASE
+  | idlist UPPERCASE
+;
+
+/* Rules section */
+rules:
+    rule
+  | rules rulewithnewline
+;
+
+rulewithnewline:
+    newlines rule
+  | rule
+;
+
+rule:
+    rulename production semicoloncomposed
+;
+
+semicoloncomposed:
+    SEMICOLON
+  | newlines SEMICOLON
+;
+
+rulename:
+    LOWERCASE TWODOTS
+  | LOWERCASE TWODOTS newlines
+;
+
+production:
+    productionterm
+  | production orcomposed productionterm
+;
+
+orcomposed:
+    OR
+  | newlines OR
+;
+
+productionterm:
+    idorliteral
+  | productionterm idorliteral
+;
+
+idorliteral:
+    UPPERCASE
+  | LOWERCASE
+;
+
+newlines:
+  NEWLINE
+  | newlines NEWLINE
+;

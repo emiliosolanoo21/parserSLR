@@ -1,0 +1,59 @@
+(* Lexer para Gramática No. 1 - Expresiones aritméticas simples para variables *)
+
+(* Introducir cualquier header aqui *)
+
+{
+parser.add_argument('-o', help='Output file', default='a.out')
+fileOut = parser.parse_args().o
+with open(fileOut, 'w') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("")
+}
+
+let delim = [' ''\t''\n']
+let ws = delim+
+let letter = ['A'-'Z''a'-'z']
+let digit = ['0'-'9']
+let id = (letter)(letter|digit)*
+let plus = ['+']
+let times = ['*']
+let lparen = ['(']
+let rparen = [')']
+
+rule tokens = 
+  | ws        
+  | id    {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("ID ")
+}              (* Cambie por una accion valida, que devuelva el token *)  
+  | plus   {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("PLUS ")
+}              (* Cambie por una accion valida, que devuelva el token *)     
+  | times    {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("TIMES ")
+}              (* Cambie por una accion valida, que devuelva el token *)     
+  | lparen   {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("LPAREN ")
+}              (* Cambie por una accion valida, que devuelva el token *)  
+  | rparen   {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("RPAREN ")
+}              (* Cambie por una accion valida, que devuelva el token *)    
+
+(*
+lista
+id , er
+ws, er1
+id, er2
+plus, er3
+token1, '*'
+token2, 
+*)

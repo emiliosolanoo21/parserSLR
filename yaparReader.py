@@ -149,6 +149,12 @@ class YaparReader:
         for eachState in self.LR0:
             for symbol, nextState in eachState.transitionsDict.items():
                 if symbol.terminal:
+                    if not pd.isna(slr.loc[eachState.number, symbol.value]):
+                        print("ERROR: Conflicto SR")
+                        result = input('Para salir presione cualquier boton, pero para continuar presione 0')
+                        if result != '0':
+                            exit(-1)
+                        
                     slr.loc[eachState.number, symbol.value] = ('s', nextState.number)
                 else:
                     slr.loc[eachState.number, symbol.value] = ('g', nextState.number)
@@ -157,6 +163,11 @@ class YaparReader:
                     slr.loc[eachState.number, '$'] = ('a', 0)
             for pr in eachState.elses:
                 for symbol in pr.origin.follow:
+                    if not pd.isna(slr.loc[eachState.number, symbol.value]):
+                        print(f"ERROR: Conflicto {str(slr.loc[eachState.number, symbol.value][0]).upper()}R")
+                        result = input('Para salir presione cualquier boton, pero para continuar presione 0 ')
+                        if result != '0':
+                            exit(-1)
                     slr.loc[eachState.number, symbol.value] = ('r', (pr.origin.value, len(pr.direction)))
         
         print(tb.tabulate(slr, headers='keys', tablefmt='psql'))

@@ -1,0 +1,81 @@
+(* Yalex for reading yapars *)
+
+{
+
+parser.add_argument('-o', help='Output file', default='a.out')
+fileOut = parser.parse_args().o
+with open(fileOut, 'w') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("")
+}
+
+let comment = '/''*'((' '|[^'/'])*)'*''/'
+let lowercase = ['a'-'z']+
+let uppercase = ['A'-'Z']+
+let tk = ' '+uppercase
+let g = tk+
+let token = "%token"g+(g)*
+let ignoreflag = "IGNORE"g+(g)*
+let twodots = ':'
+let semicolon = ';'
+let or = '|'
+let splitter = '%''%'
+let space = [' ''\t']+
+let newline = ['\n']+
+
+rule tokens = 
+  comment            {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("COMMENT ")  
+}
+  | lowercase        {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("LOWERCASE ")     
+} 
+  | token            {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("TOKEN ")
+}
+  | uppercase        {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("UPPERCASE ")
+}
+  | ignoreflag       {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("IGNOREFLAG ")
+}
+  | twodots          {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("TWODOTS ")
+}	
+  | semicolon        {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("SEMICOLON ")
+}
+  | or               {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("OR ")
+}
+  | splitter         {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("SPLITTER ")
+}
+  | space            {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("SPACE ")
+}
+  | newline          {
+with open(fileOut, 'a') as archivo:
+    # Escribe datos en el archivo
+    archivo.write("NEWLINE ")
+}
