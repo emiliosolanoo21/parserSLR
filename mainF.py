@@ -4,7 +4,7 @@ if __name__ == '__main__':
     tokensPath = './scanner/SalidaF.txt'
     with open(tokensPath, 'r') as file:
         content = file.read()
-    readerYapar = YaparReader("./sr.yalp")
+    readerYapar = YaparReader("./rr.yalp")
     readerYapar.analizeFile()
     readerYapar.drawLR0()
     readerYapar.drawLR0(True)

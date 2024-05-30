@@ -60,6 +60,8 @@ class YaparReader:
                 value = message[1][:-1].split("|")
                 prs = []
                 for pr in value:
+                    if pr.strip() == "":
+                        key.epsilon = True
                     prs.append(pr.strip())
                 productions[key] = prs
         
@@ -148,13 +150,7 @@ class YaparReader:
         
         for eachState in self.LR0:
             for symbol, nextState in eachState.transitionsDict.items():
-                if symbol.terminal:
-                    if not pd.isna(slr.loc[eachState.number, symbol.value]):
-                        print("ERROR: Conflicto SR")
-                        result = input('Para salir presione cualquier boton, pero para continuar presione 0')
-                        if result != '0':
-                            exit(-1)
-                        
+                if symbol.terminal:                        
                     slr.loc[eachState.number, symbol.value] = ('s', nextState.number)
                 else:
                     slr.loc[eachState.number, symbol.value] = ('g', nextState.number)

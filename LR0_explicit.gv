@@ -2,45 +2,36 @@
 digraph {
 	rankdir=LR
 	0 [label="0
-s -> . B a
-s -> . C B B B
-s -> . C a B A
+a -> . A
+b -> . A
+s -> . a b
+s -> . b a
 s' -> . s $" shape=circle]
 	1 [label="1
-a -> . B
-s -> B . a" shape=circle]
-	4 [label="4
-a -> B ." shape=circle]
-	1 -> 4 [label=B]
-	5 [label="5
-s -> B a ." shape=circle]
-	1 -> 5 [label=a]
-	0 -> 1 [label=B]
+a -> A .
+b -> A ." shape=circle]
+	0 -> 1 [label=A]
 	2 [label="2
-a -> . B
-s -> C . a B A
-s -> C . B B B" shape=circle]
-	6 [label="6
-a -> B .
-s -> C B . B B" shape=circle]
-	8 [label="8
-s -> C B B . B" shape=circle]
-	10 [label="10
-s -> C B B B ." shape=circle]
-	8 -> 10 [label=B]
-	6 -> 8 [label=B]
-	2 -> 6 [label=B]
-	7 [label="7
-s -> C a . B A" shape=circle]
-	9 [label="9
-s -> C a B . A" shape=circle]
-	11 [label="11
-s -> C a B A ." shape=circle]
-	9 -> 11 [label=A]
-	7 -> 9 [label=B]
-	2 -> 7 [label=a]
-	0 -> 2 [label=C]
-	3 [label="3
 s' -> s . $" shape=doublecircle]
-	0 -> 3 [label=s]
+	0 -> 2 [label=s]
+	3 [label="3
+b -> . A
+s -> a . b" shape=circle]
+	5 [label="5
+b -> A ." shape=circle]
+	3 -> 5 [label=A]
+	6 [label="6
+s -> a b ." shape=circle]
+	3 -> 6 [label=b]
+	0 -> 3 [label=a]
+	4 [label="4
+a -> . A
+s -> b . a" shape=circle]
+	7 [label="7
+a -> A ." shape=circle]
+	4 -> 7 [label=A]
+	8 [label="8
+s -> b a ." shape=circle]
+	4 -> 8 [label=a]
+	0 -> 4 [label=b]
 }

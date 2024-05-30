@@ -146,6 +146,7 @@ class State:
     
 class GrammarElement:
     def __init__(self, value, terminal=True) -> None:
+        self.epsilon = False
         self.value = value
         self.terminal = terminal
         self.first = set()
@@ -164,17 +165,31 @@ class GrammarElement:
         evaluating = list(self.production)
         while len(evaluating) > 0:
             pr = evaluating.pop(0)
-            point = pr.obtainPoint()
-            if point:
-                if point == self:
+            point = 0
+            while point < len(pr.direction):
+                pointer = pr.direction[point]
+                if pointer == self:
+                    if pointer.epsilon:
+                        point+=1
+                        continue
+                    else:
+                        break
+                if pointer.terminal:
+                    self.first.add(pointer)
+                    break
+                if pointer in seen:
+                    if pointer.epsilon:
+                        point+=1
+                        continue
+                    else:
+                        break
+                seen.add(pointer)
+                evaluating+=list(pointer.production)
+                if pointer.epsilon:
+                    point+=1
                     continue
-                if point.terminal:
-                    self.first.add(point)
-                    continue
-                if point in seen:
-                    continue
-                seen.add(point)
-                evaluating+=list(point.production)
+                else:
+                    break
                     
     def __eq__(self, other):
         """Define la igualdad entre dos instancias de la clase."""
@@ -194,6 +209,13 @@ class Production:
         self.number:int = number
         self.point = point
         
+        flag = True
+        
+        for dr in self.direction:
+            flag = dr and flag
+            
+        self.origin.epsilon = self.origin.epsilon or flag
+        
     def passPoint(self, symbol:'GrammarElement'):
         if self.point < len(self.direction):
             if symbol == self.direction[self.point]:
@@ -202,25 +224,28 @@ class Production:
         return None
     
     def calcFollow(self):
-        actual = 0
-        while actual < len(self.direction):
+        actual = len(self.direction)-1
+        tempFollow = set()
+        if not self.direction[actual].terminal:
+            for next in self.origin.follow:
+                self.direction[actual].follow.add(next)
+                
+        while actual >= 0:
             pointingPos = self.direction[actual]
-            pointingNext = None
+            pointingAfter = None
             
-            if actual+1 < len(self.direction):
-                pointingNext = self.direction[actual+1]
+            if actual-1 >= 0:
+                pointingAfter = self.direction[actual-1]
+            else:
+                break
             
-            if not pointingPos.terminal:
-                if pointingNext:
-                    if pointingNext.terminal:
-                        pointingPos.follow.add(pointingNext)
-                    else:
-                        for elem in pointingNext.first:
-                            pointingPos.follow.add(elem)
+            if not pointingAfter.terminal:
+                if pointingPos.terminal:
+                    pointingAfter.follow.add(pointingPos)
                 else:
-                    for next in self.origin.follow:
-                        pointingPos.follow.add(next)
-            actual+=1
+                    for elem in pointingPos.first:
+                        pointingAfter.follow.add(elem)
+            actual-=1
 
     def __lt__(self,other):
         if self.origin.value == other.origin.value:
